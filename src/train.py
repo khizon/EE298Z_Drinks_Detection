@@ -151,8 +151,8 @@ def get_args_parser(add_help=True):
     return parser
 
 def main(args):
-    with wandb.init(config=args) as run:
-        args = wandb.config
+    with wandb.init(project="my-test-project", entity="khizon") as run:
+        wandb.config = vars(args)
         train(args)
 
         artifact = wandb.Artifact('model', type='model')
@@ -312,5 +312,4 @@ def train(args):
 
 if __name__ == "__main__":
     args = get_args_parser().parse_args()
-    sweep_id = wandb.sweep(args, project = 'drinks_detection')
-    wandb.agent(sweep_id, main, count=1)
+    main(args)
