@@ -238,16 +238,17 @@ class DrinksDetectionDataset(torch.utils.data.Dataset):
         img = Image.open(key)
 
         target = {
-            "boxes": torch.as_tensor(annot[:, 0:5], dtype=torch.int64),
-            "area": torch.as_tensor(annot[:,5], dtype=torch.int64),
-            "labels": torch.as_tensor(annot[:,6], dtype=torch.int64),
+            "boxes": torch.as_tensor(annot[:, 0:4], dtype=torch.int64),
+            "area": torch.as_tensor(annot[:,4], dtype=torch.int64),
+            "labels": torch.as_tensor(annot[:,5], dtype=torch.int64),
             "image_id": torch.tensor([idx]),
+            "iscrowd": torch.zeros((len(annot),), dtype=torch.int64)
         }
 
         # apply the necessary transforms
         # transforms like crop, resize, normalize, etc
         if self.transforms:
-            img = self.transforms(img)
+            img, target = self.transforms(img, target)
         
         # return a list of images and corresponding labels
         return img, target

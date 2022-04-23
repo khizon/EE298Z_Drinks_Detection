@@ -27,6 +27,7 @@ import torch.utils.data
 import torchvision
 import torchvision.models.detection
 import torchvision.models.detection.mask_rcnn
+from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 import utils
 from coco_utils import get_coco, get_coco_kp, get_drinks, get_drinks_subset
 from engine import train_one_epoch, evaluate
@@ -66,6 +67,7 @@ def get_args_parser(add_help=True):
     parser.add_argument("--dataset", default="coco", type=str, help="dataset name")
     parser.add_argument("--model", default="maskrcnn_resnet50_fpn", type=str, help="model name")
     parser.add_argument("--device", default="cuda", type=str, help="device (Use cuda or cpu Default: cuda)")
+    parser.add_argument("--pretrained", default=False, dest = "pretrained", action="store_true", help = "set to true to use pre-trained weights (Default: False)")
     parser.add_argument(
         "-b", "--batch-size", default=2, type=int, help="images per gpu, the total batch size is $NGPU x batch_size"
     )
@@ -193,9 +195,17 @@ def main(args):
     if "rcnn" in args.model:
         if args.rpn_score_thresh is not None:
             kwargs["rpn_score_thresh"] = args.rpn_score_thresh
+    # model = torchvision.models.detection.__dict__[args.model](
+    #     weights=args.weights, weights_backbone=args.weights_backbone, num_classes=num_classes, **kwargs
+    # )
     model = torchvision.models.detection.__dict__[args.model](
-        weights=args.weights, weights_backbone=args.weights_backbone, num_classes=num_classes, **kwargs
+        pretrained = args.pretrained, **kwargs
     )
+    # get number of input features for the classifier
+    in_features = model.roi_heads.box_predictor.cls_score.in_features
+    # replace the pre-trained head with a new one
+    model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+    
     model.to(device)
     if args.distributed and args.sync_bn:
         model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
