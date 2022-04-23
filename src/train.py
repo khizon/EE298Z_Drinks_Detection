@@ -150,8 +150,21 @@ def get_args_parser(add_help=True):
 
     return parser
 
-
 def main(args):
+    with wandb.init(config=args) as run:
+        args = wandb.config
+        train(args)
+
+        artifact = wandb.Artifact('model', type='model')
+        artifact.add_file(os.path.join(args.output_dir, 'checkpoint.pth'))
+        artifact.add_file('results.txt')
+
+        run.log_artifact(artifact)
+        run.join()
+        run.finish()
+
+
+def train(args):
     if args.output_dir:
         utils.mkdir(args.output_dir)
 
@@ -262,15 +275,21 @@ def main(args):
         return
 
     print("Start training")
+    wandb.watch(model, log='all')
     start_time = time.time()
+    best_lost = 1e10
+
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)
         metrics = train_one_epoch(model, optimizer, data_loader, device, epoch, args.print_freq, scaler)
-        logging = {k:v.value for k, v in metrics.meters.items()}
-        print(logging)
+        logger = {k:v.value for k, v in metrics.meters.items()}
+        logger['epoch'] = epoch
+        wandb.log(logger)
+        
         lr_scheduler.step()
-        if args.output_dir:
+        if args.output_dir && (logger['loss'] < best_lost):
+            best_lost = logger['loss']
             checkpoint = {
                 "model": model_without_ddp.state_dict(),
                 "optimizer": optimizer.state_dict(),
@@ -280,7 +299,7 @@ def main(args):
             }
             if args.amp:
                 checkpoint["scaler"] = scaler.state_dict()
-            utils.save_on_master(checkpoint, os.path.join(args.output_dir, f"model_{epoch}.pth"))
+            # utils.save_on_master(checkpoint, os.path.join(args.output_dir, f"model_{epoch}.pth"))
             utils.save_on_master(checkpoint, os.path.join(args.output_dir, "checkpoint.pth"))
 
         # evaluate after every epoch
@@ -293,4 +312,5 @@ def main(args):
 
 if __name__ == "__main__":
     args = get_args_parser().parse_args()
-    main(args)
+    sweep_id = wandb.sweep(args, project = 'drinks_detection')
+    wandb.agent(sweep_id, main, count=1)
