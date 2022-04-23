@@ -32,7 +32,7 @@ import utils
 from coco_utils import get_coco, get_coco_kp, get_drinks, get_drinks_subset
 from engine import train_one_epoch, evaluate
 from group_by_aspect_ratio import GroupedBatchSampler, create_aspect_ratio_groups
-
+import wandb
 
 def get_dataset(name, image_set, transform, data_path):
     paths = {
@@ -147,20 +147,22 @@ def get_args_parser(add_help=True):
 
     # Mixed precision training parameters
     parser.add_argument("--amp", action="store_true", help="Use torch.cuda.amp for mixed precision training")
+    
+    # Wandb Logging
+    parser.add_argument("--project", default="my-test-project", type=str, help="WandB Project to log run")
 
     return parser
 
 def main(args):
-    with wandb.init(project="my-test-project", entity="khizon") as run:
-        wandb.config = vars(args)
+    with wandb.init(project=args.project) as run:
+        wandb.config.update(args)
         train(args)
 
         artifact = wandb.Artifact('model', type='model')
         artifact.add_file(os.path.join(args.output_dir, 'checkpoint.pth'))
-        artifact.add_file('results.txt')
+        artifact.add_file('logs.txt')
 
         run.log_artifact(artifact)
-        run.join()
         run.finish()
 
 
@@ -283,24 +285,27 @@ def train(args):
         if args.distributed:
             train_sampler.set_epoch(epoch)
         metrics = train_one_epoch(model, optimizer, data_loader, device, epoch, args.print_freq, scaler)
-        logger = {k:v.value for k, v in metrics.meters.items()}
+        
+        #WandB logging
+        logger = {k:float(v.value) for k, v in metrics.meters.items()}
         logger['epoch'] = epoch
         wandb.log(logger)
         
         lr_scheduler.step()
-        if args.output_dir && (logger['loss'] < best_lost):
-            best_lost = logger['loss']
-            checkpoint = {
-                "model": model_without_ddp.state_dict(),
-                "optimizer": optimizer.state_dict(),
-                "lr_scheduler": lr_scheduler.state_dict(),
-                "args": args,
-                "epoch": epoch,
-            }
-            if args.amp:
-                checkpoint["scaler"] = scaler.state_dict()
-            # utils.save_on_master(checkpoint, os.path.join(args.output_dir, f"model_{epoch}.pth"))
-            utils.save_on_master(checkpoint, os.path.join(args.output_dir, "checkpoint.pth"))
+        if args.output_dir:
+            if (logger['loss'] < best_lost):
+                best_lost = logger['loss']
+                checkpoint = {
+                    "model": model_without_ddp.state_dict(),
+                    "optimizer": optimizer.state_dict(),
+                    "lr_scheduler": lr_scheduler.state_dict(),
+                    "args": args,
+                    "epoch": epoch,
+                }
+                if args.amp:
+                    checkpoint["scaler"] = scaler.state_dict()
+                # utils.save_on_master(checkpoint, os.path.join(args.output_dir, f"model_{epoch}.pth"))
+                utils.save_on_master(checkpoint, os.path.join(args.output_dir, "checkpoint.pth"))
 
         # evaluate after every epoch
         evaluate(model, data_loader_test, device=device)
