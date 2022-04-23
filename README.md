@@ -49,7 +49,8 @@ For debugging purposes, use subset of dataset:
 `--dataset drinks_subset`
 
 ```
-torchrun --nproc_per_node=1 train.py\
+torchrun --nproc_per_node=1 src/train.py\
     --dataset drinks --datapath data --model fasterrcnn_mobilenet_v3_large_320_fpn --epochs 26\
-    --lr-steps 16 22 --aspect-ratio-group-factor 3 --weights-backbone MobileNet_V3_Large_Weights.IMAGENET1K_V1
+    --lr-steps 16 22 --aspect-ratio-group-factor 3 --weights-backbone MobileNet_V3_Large_Weights.IMAGENET1K_V1\
+    --output-dir artifacts/temp --data-augmentation none
 ```

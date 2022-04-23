@@ -53,6 +53,14 @@ class DetectionPresetTrain:
                     T.ConvertImageDtype(torch.float),
                 ]
             )
+
+        elif data_augmentation == "none":
+            self.transforms = T.Compose(
+                [
+                    T.PILToTensor(),
+                    T.ConvertImageDtype(torch.float),
+                ]
+            )
         else:
             raise ValueError(f'Unknown data augmentation policy "{data_augmentation}"')
 
