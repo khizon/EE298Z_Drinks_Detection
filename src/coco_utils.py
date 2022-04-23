@@ -5,6 +5,7 @@ import torch
 import torch.utils.data
 import torchvision
 import transforms as T
+import label_utils
 from pycocotools import mask as coco_mask
 from pycocotools.coco import COCO
 
@@ -219,6 +220,35 @@ class CocoDetection(torchvision.datasets.CocoDetection):
             img, target = self._transforms(img, target)
         return img, target
 
+class DrinksDetectionDataset(torch.utils.data.Dataset):
+    def __init__(self, dictionary, transform=None):
+        self.dictionary = dictionary
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.dictionary)
+
+    def __getitem__(self, idx):
+        # retrieve the image filename
+        key = list(self.dictionary.keys())[idx]
+        # retrieve all bounding boxes
+        annot = self.dictionary[key]
+        # open the file as a PIL image
+        img = Image.open(key)
+        # apply the necessary transforms
+        # transforms like crop, resize, normalize, etc
+        if self.transform:
+            img = self.transform(img)
+
+        target = {
+            "boxes": torch.as_tensor(annot[:, 0:5], dtype=torch.int64),
+            "area": torch.as_tensor(annot[:,5], dtype=torch.int64),
+            "labels": torch.as_tensor(annot[:,6], dtype=torch.int64),
+            "image_id": torch.tensor([idx]),
+        }
+        
+        # return a list of images and corresponding labels
+        return img, target
 
 def get_coco(root, image_set, transforms, mode="instances"):
     anno_file_template = "{}_{}2017.json"
@@ -250,3 +280,23 @@ def get_coco(root, image_set, transforms, mode="instances"):
 
 def get_coco_kp(root, image_set, transforms):
     return get_coco(root, image_set, transforms, mode="person_keypoints")
+
+def get_drinks(root, image_set, transforms):
+    '''
+    root: path to the root of the dataset labels
+    image_set: train or val
+    transforms: transforms to apply to the images
+    '''
+    PATHS = {
+        "train": ("imgs", os.path.join('annotations', 'labels_train.csv')),
+        "val": ("imgs", os.path.join('annotations', 'labels_test.csv')),
+    }
+    
+    img_folder, ann_file = PATHS[image_set]
+    img_folder = os.path.join(root, img_folder)
+    ann_file = os.path.join(root, ann_file)
+
+    dct, _ = label_utils.build_label_dictionary(ann_file)
+    dataset = DrinksDetectionDataset(dct, transforms=transforms)
+    
+    return dataset
