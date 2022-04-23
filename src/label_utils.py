@@ -65,7 +65,7 @@ def get_label_dictionary(labels, keys):
         dictionary[key] = [] # empty boxes
 
     for label in labels:
-        if len(label) != 6:
+        if len(label) != 7:
             print("Incomplete label:", label[0])
             continue
 
@@ -93,14 +93,13 @@ def get_label_dictionary(labels, keys):
     for key in keys:
         if len(dictionary[key]) == 0:
             del dictionary[key]
-
     return dictionary
 
 
 def build_label_dictionary(path):
     """Build a dict with key=filename, value=[box coords, class]"""
     labels = load_csv(path)
-    dir_path = os.path.dirname(path)
+    dir_path = os.path.dirname(os.path.dirname(path))
     # skip the 1st line header
     labels = labels[1:]
     # keys are filenames
@@ -109,7 +108,7 @@ def build_label_dictionary(path):
     dictionary = get_label_dictionary(labels, keys)
     dict = {}
     for key in dictionary.keys():
-        dict[os.path.join(dir_path, key)] = np.array(dictionary[key])
+        dict[os.path.join(dir_path, 'imgs', key)] = np.array(dictionary[key])
 
     classes = np.unique(labels[:,-1]).astype(int).tolist()
     # insert background label 0

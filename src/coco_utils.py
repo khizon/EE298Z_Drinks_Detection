@@ -8,6 +8,7 @@ import transforms as T
 import label_utils
 from pycocotools import mask as coco_mask
 from pycocotools.coco import COCO
+from PIL import Image
 
 
 class FilterAndRemapCocoCategories:
@@ -221,9 +222,9 @@ class CocoDetection(torchvision.datasets.CocoDetection):
         return img, target
 
 class DrinksDetectionDataset(torch.utils.data.Dataset):
-    def __init__(self, dictionary, transform=None):
+    def __init__(self, dictionary, transforms=None):
         self.dictionary = dictionary
-        self.transform = transform
+        self.transforms = transforms
 
     def __len__(self):
         return len(self.dictionary)
@@ -237,8 +238,8 @@ class DrinksDetectionDataset(torch.utils.data.Dataset):
         img = Image.open(key)
         # apply the necessary transforms
         # transforms like crop, resize, normalize, etc
-        if self.transform:
-            img = self.transform(img)
+        if self.transforms:
+            img = self.transforms(img)
 
         target = {
             "boxes": torch.as_tensor(annot[:, 0:5], dtype=torch.int64),

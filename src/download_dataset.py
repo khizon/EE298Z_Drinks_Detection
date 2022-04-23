@@ -7,5 +7,5 @@ if __name__ == '__main__':
     
     os.system(f'gdown --folder {url} -O {data}')
     
-    os.system(f'tar -xzf data/drinks/drinks.tar.gz -C data/')
+    os.system(f'tar -xzf data/drinks.tar.gz -C data/')
     os.system(f'mv data/drinks data/imgs')
