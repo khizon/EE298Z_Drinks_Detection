@@ -236,10 +236,6 @@ class DrinksDetectionDataset(torch.utils.data.Dataset):
         annot = self.dictionary[key]
         # open the file as a PIL image
         img = Image.open(key)
-        # apply the necessary transforms
-        # transforms like crop, resize, normalize, etc
-        if self.transforms:
-            img = self.transforms(img)
 
         target = {
             "boxes": torch.as_tensor(annot[:, 0:5], dtype=torch.int64),
@@ -247,6 +243,11 @@ class DrinksDetectionDataset(torch.utils.data.Dataset):
             "labels": torch.as_tensor(annot[:,6], dtype=torch.int64),
             "image_id": torch.tensor([idx]),
         }
+
+        # apply the necessary transforms
+        # transforms like crop, resize, normalize, etc
+        if self.transforms:
+            img = self.transforms(img)
         
         # return a list of images and corresponding labels
         return img, target
