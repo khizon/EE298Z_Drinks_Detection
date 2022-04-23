@@ -300,3 +300,24 @@ def get_drinks(root, image_set, transforms):
     dataset = DrinksDetectionDataset(dct, transforms=transforms)
     
     return dataset
+
+def get_drinks_subset(root, image_set, transforms):
+    '''
+    Similar to get_drinks, but returns a subset of the dataset (used for debugging)
+    root: path to the root of the dataset labels
+    image_set: train or val
+    transforms: transforms to apply to the images
+    '''
+    PATHS = {
+        "train": ("imgs", os.path.join('annotations', 'labels_train_subset.csv')),
+        "val": ("imgs", os.path.join('annotations', 'labels_test_subset.csv')),
+    }
+    
+    img_folder, ann_file = PATHS[image_set]
+    img_folder = os.path.join(root, img_folder)
+    ann_file = os.path.join(root, ann_file)
+
+    dct, _ = label_utils.build_label_dictionary(ann_file)
+    dataset = DrinksDetectionDataset(dct, transforms=transforms)
+    
+    return dataset
