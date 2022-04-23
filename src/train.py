@@ -36,7 +36,7 @@ from group_by_aspect_ratio import GroupedBatchSampler, create_aspect_ratio_group
 def get_dataset(name, image_set, transform, data_path):
     paths = {
         "coco": (data_path, get_coco, 91), 
-        "coco_kp": (data_path, get_coco_kp, 2)
+        "coco_kp": (data_path, get_coco_kp, 2),
         "drinks": (data_path, get_drinks, 4),
         "drinks_subset": (data_path, get_drinks_subset, 4),
         }

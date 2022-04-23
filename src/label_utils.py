@@ -13,7 +13,7 @@ from __future__ import unicode_literals
 
 import numpy as np
 import csv
-import config
+# import config
 import os
 import matplotlib.pyplot as plt
 
@@ -36,16 +36,16 @@ def get_box_rgbcolor(index=None):
     return colors[index % len(colors)]
 
 
-def index2class(index=0):
-    """Convert index (int) to class name (string)"""
-    classes = config.params['classes']
-    return classes[index]
+# def index2class(index=0):
+#     """Convert index (int) to class name (string)"""
+#     classes = config.params['classes']
+#     return classes[index]
 
 
-def class2index(class_="background"):
-    """Convert class name (string) to index (int)"""
-    classes = config.params['classes']
-    return classes.index(class_)
+# def class2index(class_="background"):
+#     """Convert class name (string) to index (int)"""
+#     classes = config.params['classes']
+#     return classes.index(class_)
 
 
 def load_csv(path):
