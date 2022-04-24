@@ -239,8 +239,8 @@ class DrinksDetectionDataset(torch.utils.data.Dataset):
 
         target = {
             "boxes": torch.as_tensor(annot[:, 0:4], dtype=torch.int64),
-            "area": torch.as_tensor(annot[:,4], dtype=torch.int64),
-            "labels": torch.as_tensor(annot[:,5], dtype=torch.int64),
+            "area": torch.as_tensor(annot[:,6], dtype=torch.int64),
+            "labels": torch.as_tensor(annot[:,7], dtype=torch.int64),
             "image_id": torch.tensor([idx]),
             "iscrowd": torch.zeros((len(annot),), dtype=torch.int64)
         }

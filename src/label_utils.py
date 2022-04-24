@@ -65,7 +65,7 @@ def get_label_dictionary(labels, keys):
         dictionary[key] = [] # empty boxes
 
     for label in labels:
-        if len(label) != 7:
+        if len(label) != 9:
             print("Incomplete label:", label[0])
             continue
 
