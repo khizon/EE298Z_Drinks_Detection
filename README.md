@@ -1,18 +1,42 @@
-# EE298Z_Drinks_Detection reference training scripts
+# EE298Z_Drinks_Detection
 
-# Object detection 
+This folder contains modified scripts for training object detection models. The original code are available at [] and []
 
-This folder contains reference training scripts for object detection.
-They serve as a log of how to train specific models, to provide baseline
-training and evaluation scripts to quickly bootstrap research.
+## Folder structure
+
+```
+EE298Z_Drinks_Detection
+    | /data
+    |   | /annotations
+    |   |   | labels_test_subset.csv
+    |   |   | labels_train_subset.csv
+    |   |   | labels_test.csv
+    |   |   | labels_train.csv
+    |   | /imgs
+    |       | 0000000.jpg
+    |       | 0000001.jpg
+    |       | ...
+    | /src
+```
+
+## Dependencies
 
 To execute the example commands below you must install the following:
 
 ```
+pytorch & torchvision
+gdown (to download the dataset from gdrive)
 cython
 pycocotools
 matplotlib
+wandb (to log training progress)
 ```
+Alternatively run:
+`pip install -r requirements.txt`
+
+
+## Usage
+Execute the torchrun command below to train the model. Alternatively, you can edit  `src/runner.py` and run it using the command `python src/runner.py`
 
 You must modify the following flags:
 
@@ -20,37 +44,18 @@ You must modify the following flags:
 
 `--nproc_per_node=<number_of_gpus_available>`
 
-Except otherwise noted, all models have been trained on 8x V100 GPUs. 
-
-### Faster R-CNN ResNet-50 FPN
-```
-torchrun --nproc_per_node=8 train.py\
-    --dataset coco --model fasterrcnn_resnet50_fpn --epochs 26\
-    --lr-steps 16 22 --aspect-ratio-group-factor 3 --weights-backbone ResNet50_Weights.IMAGENET1K_V1
-```
-
-### Faster R-CNN MobileNetV3-Large FPN
-```
-torchrun --nproc_per_node=8 train.py\
-    --dataset coco --model fasterrcnn_mobilenet_v3_large_fpn --epochs 26\
-    --lr-steps 16 22 --aspect-ratio-group-factor 3 --weights-backbone MobileNet_V3_Large_Weights.IMAGENET1K_V1
-```
-
-### Faster R-CNN MobileNetV3-Large 320 FPN
-```
-torchrun --nproc_per_node=8 train.py\
-    --dataset coco --model fasterrcnn_mobilenet_v3_large_320_fpn --epochs 26\
-    --lr-steps 16 22 --aspect-ratio-group-factor 3 --weights-backbone MobileNet_V3_Large_Weights.IMAGENET1K_V1
-```
+All models have been trained on 1x T4 GPUs. 
 
 ### Drinks Detection
 For debugging purposes, use subset of dataset:
 
 `--dataset drinks_subset`
 
+Training loss and live logs can be viewed in Weights and Biases. Outputs of the evaluation can be found in `logs.txt ` and the model will be saved in `--output-dir`
+
 ```
 torchrun --nproc_per_node=1 src/train.py\
     --dataset drinks --data-path data --model fasterrcnn_mobilenet_v3_large_320_fpn --epochs 26\
     --lr-steps 16 22 --aspect-ratio-group-factor 3 --weights-backbone MobileNet_V3_Large_Weights.IMAGENET1K_V1\
-    --output-dir artifacts/temp --data-augmentation none
+    --output-dir artifacts/temp --data-augmentation none > logs.txt
 ```
