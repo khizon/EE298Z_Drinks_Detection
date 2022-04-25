@@ -157,12 +157,12 @@ def main(args):
     with wandb.init(project=args.project) as run:
         wandb.config.update(args)
         train(args)
+        if args.output_dir:
+            artifact = wandb.Artifact('model', type='model')
+            artifact.add_file(os.path.join(args.output_dir, 'checkpoint.pth'))
+            artifact.add_file(os.path.join(args.output_dir, 'logs.txt')
 
-        artifact = wandb.Artifact('model', type='model')
-        artifact.add_file(os.path.join(args.output_dir, 'checkpoint.pth'))
-        artifact.add_file('logs.txt')
-
-        run.log_artifact(artifact)
+            run.log_artifact(artifact)
         run.finish()
 
 
@@ -279,7 +279,6 @@ def train(args):
     print("Start training")
     wandb.watch(model, log='all')
     start_time = time.time()
-    best_lost = 1e10
 
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
@@ -293,19 +292,17 @@ def train(args):
         
         lr_scheduler.step()
         if args.output_dir:
-            if (logger['loss'] < best_lost):
-                best_lost = logger['loss']
-                checkpoint = {
-                    "model": model_without_ddp.state_dict(),
-                    "optimizer": optimizer.state_dict(),
-                    "lr_scheduler": lr_scheduler.state_dict(),
-                    "args": args,
-                    "epoch": epoch,
-                }
-                if args.amp:
-                    checkpoint["scaler"] = scaler.state_dict()
-                # utils.save_on_master(checkpoint, os.path.join(args.output_dir, f"model_{epoch}.pth"))
-                utils.save_on_master(checkpoint, os.path.join(args.output_dir, "checkpoint.pth"))
+            checkpoint = {
+                "model": model_without_ddp.state_dict(),
+                "optimizer": optimizer.state_dict(),
+                "lr_scheduler": lr_scheduler.state_dict(),
+                "args": args,
+                "epoch": epoch,
+            }
+            if args.amp:
+                checkpoint["scaler"] = scaler.state_dict()
+            # utils.save_on_master(checkpoint, os.path.join(args.output_dir, f"model_{epoch}.pth"))
+            utils.save_on_master(checkpoint, os.path.join(args.output_dir, "checkpoint.pth"))
 
         # evaluate after every epoch
         evaluate(model, data_loader_test, device=device)

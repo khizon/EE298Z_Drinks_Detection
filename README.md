@@ -58,5 +58,5 @@ Training loss and live logs can be viewed in Weights and Biases. Outputs of the 
 torchrun --nproc_per_node=1 src/train.py\
     --dataset drinks --data-path data --model fasterrcnn_mobilenet_v3_large_320_fpn --epochs 26\
     --lr-steps 16 22 --aspect-ratio-group-factor 3 --weights-backbone MobileNet_V3_Large_Weights.IMAGENET1K_V1\
-    --output-dir artifacts/temp --data-augmentation none > artifacts/logs.txt
+    --output-dir artifacts --data-augmentation none > artifacts/logs.txt
 ```
