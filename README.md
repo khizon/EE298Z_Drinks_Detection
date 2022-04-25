@@ -17,6 +17,7 @@ EE298Z_Drinks_Detection
     |       | 0000001.jpg
     |       | ...
     | /src
+    | /artifacts
 ```
 
 ## Dependencies
@@ -51,11 +52,11 @@ For debugging purposes, use subset of dataset:
 
 `--dataset drinks_subset`
 
-Training loss and live logs can be viewed in Weights and Biases. Outputs of the evaluation can be found in `logs.txt ` and the model will be saved in `--output-dir`
+Training loss and live logs can be viewed in Weights and Biases. Outputs of the evaluation can be found in `artifacts/logs.txt ` and the model will be saved in `--output-dir`
 
 ```
 torchrun --nproc_per_node=1 src/train.py\
     --dataset drinks --data-path data --model fasterrcnn_mobilenet_v3_large_320_fpn --epochs 26\
     --lr-steps 16 22 --aspect-ratio-group-factor 3 --weights-backbone MobileNet_V3_Large_Weights.IMAGENET1K_V1\
-    --output-dir artifacts/temp --data-augmentation none > logs.txt
+    --output-dir artifacts/temp --data-augmentation none > artifacts/logs.txt
 ```
