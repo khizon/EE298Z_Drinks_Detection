@@ -157,7 +157,7 @@ def main(args):
     with wandb.init(project=args.project) as run:
         wandb.config.update(args)
         train(args)
-        if args.output_dir:
+        if not args.test_only:
             artifact = wandb.Artifact('model', type='model')
             artifact.add_file(os.path.join(args.output_dir, 'checkpoint.pth'))
             artifact.add_file('logs.txt')
