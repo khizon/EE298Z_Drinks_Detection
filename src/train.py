@@ -160,7 +160,7 @@ def main(args):
         if args.output_dir:
             artifact = wandb.Artifact('model', type='model')
             artifact.add_file(os.path.join(args.output_dir, 'checkpoint.pth'))
-            artifact.add_file(os.path.join(args.output_dir, 'logs.txt')
+            artifact.add_file('logs.txt')
 
             run.log_artifact(artifact)
         run.finish()
