@@ -39,7 +39,7 @@ if __name__ == '__main__':
         command = f'torchrun --nproc_per_node=1 src/train.py\
             --dataset {dataset} --data-path data --model fasterrcnn_mobilenet_v3_large_fpn --epochs 26\
             --lr-steps 16 22 --aspect-ratio-group-factor 3\
-            --output-dir artifacts/temp --data-augmentation drinks --pretrained --project {project} > logs.txt'
+            --output-dir artifacts/temp --data-augmentation none --pretrained --project {project} > logs.txt'
     
     
     os.system('clear')
