@@ -33,7 +33,8 @@ if __name__ == '__main__':
     if args.test_only:
         command = f'torchrun --nproc_per_node=1 src/train.py\
                 --dataset {dataset} --data-path data --model fasterrcnn_mobilenet_v3_large_fpn\
-                --test-only --resume artifacts/temp/checkpoint.pth  --data-augmentation none --project {project} > logs.txt'
+                --test-only --resume https://github.com/khizon/EE298Z_Drinks_Detection/releases/download/v0.0/checkpoint.pth\
+                --data-augmentation none --project {project} > logs.txt'
     else:
         command = f'torchrun --nproc_per_node=1 src/train.py\
             --dataset {dataset} --data-path data --model fasterrcnn_mobilenet_v3_large_fpn --epochs 26\
