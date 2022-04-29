@@ -33,6 +33,16 @@ class DetectionPresetTrain:
                     ToTensorV2()
                 ], bbox_params=A.BboxParams(format='pascal_voc', label_fields=['class_labels'])
             )
+        
+        elif data_augmentation == "brightness":
+            self.transforms = A.Compose(
+                [
+                    A.RandomBrightnessContrast(p=hflip_prob),
+                    # A.ShiftScaleRotate(p=hflip_prob),
+                    A.ToFloat(),
+                    ToTensorV2()
+                ], bbox_params=A.BboxParams(format='pascal_voc', label_fields=['class_labels'])
+            )
 
         else:
             raise ValueError(f'Unknown data augmentation policy "{data_augmentation}"')
@@ -40,8 +50,8 @@ class DetectionPresetTrain:
     def __call__(self, img, target):
         transformed = self.transforms(image=np.asarray(img), bboxes=target["boxes"].numpy(), class_labels=target["labels"].numpy())
         img = transformed["image"]
-        target["boxes"] = torch.as_tensor(transformed["bboxes"], dtype=torch.int64)
-        target["labels"] = torch.as_tensor(transformed["class_labels"], dtype=torch.int64)
+        target["boxes"] = torch.as_tensor(transformed["bboxes"], dtype=torch.int64) if len(transformed["bboxes"]) > 0 else torch.tensor([[0,0,1,1]])
+        target["labels"] = torch.as_tensor(transformed["class_labels"], dtype=torch.int64) if len(transformed["class_labels"]) > 0 else torch.tensor([0])
 
         return img, target
 
