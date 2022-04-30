@@ -9,9 +9,9 @@ if __name__ == '__main__':
         os.system(command)
 
     command = f'torchrun --nproc_per_node=1 src/train.py\
-                --dataset drinks --data-path data --model fasterrcnn_mobilenet_v3_large_fpn\
-                --test-only --resume https://github.com/khizon/EE298Z_Drinks_Detection/releases/download/v0.0/checkpoint.pth\
-                --data-augmentation none > logs.txt'
+            --dataset drinks --data-path data --model fasterrcnn_mobilenet_v3_large_fpn --epochs 26\
+            --lr-steps 16 22 --aspect-ratio-group-factor 3\
+            --output-dir artifacts/temp --data-augmentation drinks --pretrained > logs.txt'
     
     os.system('clear')
     os.system(command)
