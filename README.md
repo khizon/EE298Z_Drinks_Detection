@@ -24,6 +24,8 @@ EE298Z_Drinks_Detection
     |       | 0000001.jpg
     |       | ...
     | /src
+    |   | /train.py
+    |   | ...
     | /artifacts
     | checkpoint.pth
     | logs.txt
@@ -31,7 +33,6 @@ EE298Z_Drinks_Detection
 
 ## Dependencies
 
-To execute the example commands below you must install the following:
 
 `pip install -r requirements.txt`
 
@@ -61,7 +62,13 @@ The model will be downloaded at `data/checkpoint.pth` and the results will be wr
 
 ### Training
 
-Execute the torchrun command below to train the model. Alternatively, you can edit  `src/runner.py` and run it using the command `python src/runner.py`
+```
+torchrun --nproc_per_node=1 src/train.py\
+--dataset drinks --data-path data --model fasterrcnn_mobilenet_v3_large_fpn --epochs 26\
+--lr-steps 16 22 --aspect-ratio-group-factor 3\
+--output-dir artifacts/temp --data-augmentation none --pretrained > logs.txt
+```
+
 
 You must modify the following flags:
 
@@ -73,11 +80,8 @@ For debugging purposes, use subset of dataset:
 
 `--dataset drinks_subset`
 
-Training loss and live logs can be viewed in Weights and Biases. Outputs of the evaluation can be found in `logs.txt ` and the model will be saved in `--output-dir`
+To enable data augmentation:
 
-```
-torchrun --nproc_per_node=1 src/train.py\
---dataset drinks --data-path data --model fasterrcnn_mobilenet_v3_large_fpn --epochs 26\
---lr-steps 16 22 --aspect-ratio-group-factor 3\
---output-dir artifacts/temp --data-augmentation none --pretrained > logs.txt
-```
+`--data-augmentation drinks`
+
+
