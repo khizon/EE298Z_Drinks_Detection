@@ -162,7 +162,7 @@ def main(args):
         train(args)
         if not args.test_only:
             artifact = wandb.Artifact('model', type='model')
-            artifact.add_file(os.path.join(args.output_dir, 'checkpoint.pth'))
+            artifact.add_file(os.path.join(args.output_dir, f'{args.model}_{args.data_augmentation}.pth'))
             artifact.add_file('logs.txt')
 
             run.log_artifact(artifact)
@@ -311,7 +311,7 @@ def train(args):
             if args.amp:
                 checkpoint["scaler"] = scaler.state_dict()
             # utils.save_on_master(checkpoint, os.path.join(args.output_dir, f"model_{epoch}.pth"))
-            utils.save_on_master(checkpoint, os.path.join(args.output_dir, "checkpoint.pth"))
+            utils.save_on_master(checkpoint, os.path.join(args.output_dir, f"{args.model}_{args.data_augmentation}.pth"))
 
         # evaluate after every epoch
         evaluate(model, data_loader_test, device=device)

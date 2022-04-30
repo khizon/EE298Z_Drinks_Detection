@@ -26,9 +26,11 @@ if __name__ == '__main__':
     if args.debug:
         dataset = 'drinks_subset'
         project = 'test'
+        epochs = 10
     else:
         dataset = 'drinks'
         project = 'EE298Z_Drinks_Detection'
+        epochs = 26
         
     if args.test_only:
         command = f'torchrun --nproc_per_node=1 src/train.py\
@@ -37,7 +39,7 @@ if __name__ == '__main__':
                 --data-augmentation none > logs.txt'
     else:
         command = f'torchrun --nproc_per_node=1 src/train.py\
-            --dataset {dataset} --data-path data --model fasterrcnn_mobilenet_v3_large_fpn --epochs 26\
+            --dataset {dataset} --data-path data --model fasterrcnn_mobilenet_v3_large_fpn --epochs {epochs}\
             --lr-steps 16 22 --aspect-ratio-group-factor 3\
             --output-dir artifacts/temp --data-augmentation drinks --pretrained --project {project} > logs.txt'
     
