@@ -28,17 +28,16 @@ class DetectionPresetTrain:
             self.transforms = A.Compose(
                 [
                     A.RandomBrightnessContrast(p=hflip_prob),
-                    A.ShiftScaleRotate(p=hflip_prob),
+                    A.ShiftScaleRotate(p=hflip_prob, rotate_limit=180),
                     A.ToFloat(),
                     ToTensorV2()
-                ], bbox_params=A.BboxParams(format='pascal_voc', label_fields=['class_labels'])
+                ], bbox_params=A.BboxParams(format='pascal_voc', min_visibility=0.3, label_fields=['class_labels'])
             )
         
         elif data_augmentation == "brightness":
             self.transforms = A.Compose(
                 [
                     A.RandomBrightnessContrast(p=hflip_prob),
-                    # A.ShiftScaleRotate(p=hflip_prob),
                     A.ToFloat(),
                     ToTensorV2()
                 ], bbox_params=A.BboxParams(format='pascal_voc', label_fields=['class_labels'])

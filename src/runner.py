@@ -25,7 +25,7 @@ if __name__ == '__main__':
     
     if args.debug:
         dataset = 'drinks_subset'
-        project = 'my-test-project'
+        project = 'test'
     else:
         dataset = 'drinks'
         project = 'EE298Z_Drinks_Detection'
@@ -34,12 +34,12 @@ if __name__ == '__main__':
         command = f'torchrun --nproc_per_node=1 src/train.py\
                 --dataset {dataset} --data-path data --model fasterrcnn_mobilenet_v3_large_fpn\
                 --test-only --resume https://github.com/khizon/EE298Z_Drinks_Detection/releases/download/v0.0/checkpoint.pth\
-                --data-augmentation none --project {project} > logs.txt'
+                --data-augmentation none > logs.txt'
     else:
         command = f'torchrun --nproc_per_node=1 src/train.py\
             --dataset {dataset} --data-path data --model fasterrcnn_mobilenet_v3_large_fpn --epochs 26\
             --lr-steps 16 22 --aspect-ratio-group-factor 3\
-            --output-dir artifacts/temp --data-augmentation none --pretrained --project {project} > logs.txt'
+            --output-dir artifacts/temp --data-augmentation drinks --pretrained --project {project} > logs.txt'
     
     
     os.system('clear')

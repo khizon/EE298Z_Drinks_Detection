@@ -150,11 +150,13 @@ def get_args_parser(add_help=True):
     parser.add_argument("--amp", action="store_true", help="Use torch.cuda.amp for mixed precision training")
     
     # Wandb Logging
-    parser.add_argument("--project", default="my-test-project", type=str, help="WandB Project to log run")
+    parser.add_argument("--project", default=None, type=str, help="WandB Project to log run")
 
     return parser
 
 def main(args):
+    if args.project is None:
+        os.environ['WANDB_MODE'] = 'offline'
     with wandb.init(project=args.project) as run:
         wandb.config.update(args)
         train(args)
