@@ -52,12 +52,12 @@ Test the released model on the test set.
 
 ```
 torchrun --nproc_per_node=1 src/train.py\
---dataset {dataset} --data-path data --model fasterrcnn_mobilenet_v3_large_fpn\
+--dataset drinks --data-path data --model fasterrcnn_mobilenet_v3_large_fpn\
 --test-only --resume https://github.com/khizon/EE298Z_Drinks_Detection/releases/download/v0.0/checkpoint.pth\
---data-augmentation none --project {project} > logs.txt
+--data-augmentation none > logs.txt
 ```
 
-The model will be downloaded at `data/checkpoint.pth`
+The model will be downloaded at `data/checkpoint.pth` and the results will be written to `logs.txt`.
 
 ### Training
 
@@ -65,11 +65,10 @@ Execute the torchrun command below to train the model. Alternatively, you can ed
 
 You must modify the following flags:
 
-`--data-path=/path/to/coco/dataset`
+`--data-path=<root_directory_of_dataset>`
 
 `--nproc_per_node=<number_of_gpus_available>`
 
-### Drinks Detection
 For debugging purposes, use subset of dataset:
 
 `--dataset drinks_subset`
