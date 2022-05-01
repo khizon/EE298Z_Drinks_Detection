@@ -270,7 +270,7 @@ def train(args):
         if validators.url(args.resume):
             checkpoint = args.resume.rsplit('/', 1)[-1]
             torch.hub.download_url_to_file(args.resume, checkpoint)
-            checkpoint = torch.load(checkpoint)
+            checkpoint = torch.load(checkpoint, map_location="cpu")
         else:
             checkpoint = torch.load(args.resume, map_location="cpu")
             
