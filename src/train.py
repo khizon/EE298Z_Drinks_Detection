@@ -163,7 +163,8 @@ def main(args):
         if not args.test_only:
             artifact = wandb.Artifact('model', type='model')
             artifact.add_file(os.path.join(args.output_dir, f'{args.model}_{args.data_augmentation}.pth'))
-            artifact.add_file('logs.txt')
+            if os.path.exists('logs.txt'):
+                artifact.add_file('logs.txt')
 
             run.log_artifact(artifact)
         run.finish()
