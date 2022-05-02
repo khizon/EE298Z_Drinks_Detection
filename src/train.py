@@ -125,7 +125,7 @@ def get_args_parser(add_help=True):
         "--trainable-backbone-layers", default=None, type=int, help="number of trainable layers of backbone"
     )
     parser.add_argument(
-        "--data-augmentation", default="hflip", type=str, help="data augmentation policy (default: hflip)"
+        "--data-augmentation", default="none", type=str, help="data augmentation policy (default: hflip)"
     )
     parser.add_argument(
         "--sync-bn",

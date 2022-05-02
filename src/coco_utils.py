@@ -248,7 +248,7 @@ class DrinksDetectionDataset(torch.utils.data.Dataset):
         # apply the necessary transforms
         # transforms like crop, resize, normalize, etc
         if self.transforms:
-            img, target = self.transforms(img, target)
+            img = self.transforms(img, target)
         
         # return a list of images and corresponding labels
         return img, target
