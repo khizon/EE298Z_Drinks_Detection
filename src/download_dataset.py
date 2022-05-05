@@ -16,6 +16,10 @@ if __name__ == '__main__':
     if not os.path.exists(os.path.join('./', 'drinks.tar.gz')):
         # os.system(f'gdown --folder {url} -O {data}')
         gdown.download_folder(url, use_cookies=False)
+        
+    if not os.path.exists(os.path.join('./', 'drinks.tar.gz')):
+        print('Download failed')
+        break
     
     with zipfile.ZipFile(os.path.join('./', 'annotations.zip'), 'r') as zip_ref:
         zip_ref.extractall(os.path.join(data))
