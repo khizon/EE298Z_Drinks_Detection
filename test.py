@@ -2,8 +2,8 @@ import os
 
 if __name__ == '__main__':
     
-    command = f'pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu113'
-    os.system(command)
+    # command = f'pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu113'
+    # os.system(command)
     command = f'pip install -r requirements.txt'
     os.system(command)
 
